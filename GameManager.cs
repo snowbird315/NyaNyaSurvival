@@ -5,52 +5,71 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    //’è”’è‹`
-    public const int WALL_JOB = 0; //‰æ–ÊFƒoƒCƒg
-    public const int WALL_SHOPPING = 1; //‰æ–ÊF”ƒ‚¢•¨
-    public const int WALL_GAME = 2; //‰æ–ÊFŒâŠy
-    public const int WALL_SLEEP = 3; //‰æ–ÊFAQ
-    public const int WALL_OPTION = 4; //‰æ–ÊFİ’è
-    public const int WALL_PANS = 5; //‰æ–ÊF”ƒ‚¢•¨FH—¿
-    public const int WALL_MASK = 6; //‰æ–ÊF”ƒ‚¢•¨Fƒ}ƒXƒN
-    public const int WALL_KADENS = 7; //‰æ–ÊF”ƒ‚¢•¨F‰Æ“d
-    public const int WALL_GAMES = 8; //‰æ–ÊF”ƒ‚¢•¨FŒâŠy•i
+    //å®šæ•°å®šç¾©
+    public const int WALL_JOB = 0; //ç”»é¢ï¼šãƒã‚¤ãƒˆ
+    public const int WALL_SHOPPING = 1; //ç”»é¢ï¼šè²·ã„ç‰©
+    public const int WALL_GAME = 2; //ç”»é¢ï¼šå¨¯æ¥½
+    public const int WALL_SLEEP = 3; //ç”»é¢ï¼šå°±å¯
+    public const int WALL_OPTION = 4; //ç”»é¢ï¼šè¨­å®š
+    public const int WALL_PANS = 5; //ç”»é¢ï¼šè²·ã„ç‰©ï¼šé£Ÿæ–™
+    public const int WALL_MASK = 6; //ç”»é¢ï¼šè²·ã„ç‰©ï¼šãƒã‚¹ã‚¯
+    public const int WALL_KADENS = 7; //ç”»é¢ï¼šè²·ã„ç‰©ï¼šå®¶é›»
+    public const int WALL_GAMES = 8; //ç”»é¢ï¼šè²·ã„ç‰©ï¼šå¨¯æ¥½å“
+
+    private const int PAN = 300; //é‡‘é¡ï¼šé£Ÿæ–™
+    private const int MASK = 200; //é‡‘é¡ï¼šãƒã‚¹ã‚¯
+    private const int FUTON = 5000; //é‡‘é¡ï¼šå¸ƒå›£
+    private const int FLEEZER = 10000; //é‡‘é¡ï¼šå†·è”µåº«
+    private const int TRUMP = 500; //é‡‘é¡ï¼šãƒˆãƒ©ãƒ³ãƒ—
+    private const int SHOUGI = 2000; //é‡‘é¡ï¼šå°†æ£‹
+    private const int VIDEO = 10000; //é‡‘é¡ï¼šãƒ†ãƒ¬ãƒ“
+    private const int GAME = 15000; //é‡‘é¡ï¼šæ®ç½®å‹ã‚²ãƒ¼ãƒ 
 
 
-    //ƒQ[ƒ€ƒIƒuƒWƒFƒNƒg
-    public GameObject panelWalls; //ƒpƒlƒ‹F•Ç
-    public Slider sliderInfection; //ƒXƒ‰ƒCƒ_[FŠ´õ—¦
-    public Slider sliderStress; //ƒXƒ‰ƒCƒ_[FƒXƒgƒŒƒX
-    public GameObject buttonJobs; //ƒ{ƒ^ƒ“FƒoƒCƒg
-    public GameObject buttonShoppings; //ƒ{ƒ^ƒ“F”ƒ‚¢•¨
-    public GameObject buttonGames; //ƒ{ƒ^ƒ“FŒâŠy
-    public GameObject buttonSleeps; //ƒ{ƒ^ƒ“FAQ
-    public GameObject buttonOptions; //ƒ{ƒ^ƒ“Fİ’è
-    public GameObject buttonShoppingPans; //ƒ{ƒ^ƒ“F”ƒ‚¢•¨FH—¿
-    public GameObject buttonShoppingMasks; //ƒ{ƒ^ƒ“F”ƒ‚¢•¨Fƒ}ƒXƒN
-    public GameObject buttonShoppingKadens; //ƒ{ƒ^ƒ“F”ƒ‚¢•¨F‰Æ“d
-    public GameObject buttonShoppingGames; //ƒ{ƒ^ƒ“F”ƒ‚¢•¨FŒâŠy•i
-    public GameObject buttonShoppingBack; //ƒ{ƒ^ƒ“F”ƒ‚¢•¨F–ß‚é
-    public GameObject textCoin; //ƒeƒLƒXƒgF‚¨‹à
-    public GameObject textPan; //ƒeƒLƒXƒgFH—¿
-    public GameObject textMask; //ƒeƒLƒXƒgFƒ}ƒXƒN
-    public GameObject textDate; //ƒeƒLƒXƒgF“ú•t
-    public GameObject textTime; //ƒeƒLƒXƒgFŠÔ
-    public GameObject nukoComment; //ƒeƒLƒXƒg•t‚«‚Ê‚±
-    public GameObject textShoppingPan; //ƒeƒLƒXƒgF”ƒ‚¢•¨FH—¿
-    public GameObject textShoppingMask; //ƒeƒLƒXƒgF”ƒ‚¢•¨Fƒ}ƒXƒN
+    //ã‚²ãƒ¼ãƒ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+    public GameObject panelWalls; //ãƒ‘ãƒãƒ«ï¼šå£
+    public Slider sliderInfection; //ã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ï¼šæ„ŸæŸ“ç‡
+    public Slider sliderStress; //ã‚¹ãƒ©ã‚¤ãƒ€ãƒ¼ï¼šã‚¹ãƒˆãƒ¬ã‚¹
+    public GameObject buttonJobs; //ãƒœã‚¿ãƒ³ï¼šãƒã‚¤ãƒˆ
+    public GameObject buttonShoppings; //ãƒœã‚¿ãƒ³ï¼šè²·ã„ç‰©
+    public GameObject buttonGames; //ãƒœã‚¿ãƒ³ï¼šå¨¯æ¥½
+    public GameObject buttonSleeps; //ãƒœã‚¿ãƒ³ï¼šå°±å¯
+    public GameObject buttonOptions; //ãƒœã‚¿ãƒ³ï¼šè¨­å®š
+    public GameObject buttonShoppingPans; //ãƒœã‚¿ãƒ³ï¼šè²·ã„ç‰©ï¼šé£Ÿæ–™
+    public GameObject buttonShoppingMasks; //ãƒœã‚¿ãƒ³ï¼šè²·ã„ç‰©ï¼šãƒã‚¹ã‚¯
+    public GameObject buttonShoppingKadens; //ãƒœã‚¿ãƒ³ï¼šè²·ã„ç‰©ï¼šå®¶é›»
+    public GameObject buttonShoppingGames; //ãƒœã‚¿ãƒ³ï¼šè²·ã„ç‰©ï¼šå¨¯æ¥½å“
+    public GameObject buttonShoppingBack; //ãƒœã‚¿ãƒ³ï¼šè²·ã„ç‰©ï¼šæˆ»ã‚‹
+    public GameObject textCoin; //ãƒ†ã‚­ã‚¹ãƒˆï¼šãŠé‡‘
+    public GameObject textPan; //ãƒ†ã‚­ã‚¹ãƒˆï¼šé£Ÿæ–™
+    public GameObject textMask; //ãƒ†ã‚­ã‚¹ãƒˆï¼šãƒã‚¹ã‚¯
+    public GameObject textDate; //ãƒ†ã‚­ã‚¹ãƒˆï¼šæ—¥ä»˜
+    public GameObject textTime; //ãƒ†ã‚­ã‚¹ãƒˆï¼šæ™‚é–“
+    public GameObject textNuko; //ãƒ†ã‚­ã‚¹ãƒˆï¼šã¬ã“
+    public GameObject imageNuko; //ç”»åƒï¼šã¬ã“
+    public GameObject textShoppingPan; //ãƒ†ã‚­ã‚¹ãƒˆï¼šè²·ã„ç‰©ï¼šé£Ÿæ–™ï¼šå€‹æ•°
+    public GameObject textShoppingMask; //ãƒ†ã‚­ã‚¹ãƒˆï¼šè²·ã„ç‰©ï¼šãƒã‚¹ã‚¯ï¼šå€‹æ•°
+    public GameObject textShoppingTotalPan; //ãƒ†ã‚­ã‚¹ãƒˆï¼šè²·ã„ç‰©ï¼šé£Ÿæ–™ï¼šé‡‘é¡
+    public GameObject textShoppingTotalMask; //ãƒ†ã‚­ã‚¹ãƒˆï¼šè²·ã„ç‰©ï¼šãƒã‚¹ã‚¯ï¼šé‡‘é¡
 
 
-    //•Ï”
-    private int wallNo; //Œ»İ‚Ì‰æ–Ê
-    private int coin; //‚¨‹à
-    private int pan; //H—¿
-    private int mask; //ƒ}ƒXƒN
-    private int date; //“ú•t
-    private bool time; //ŠÔFtrue,Œß‘OFfalse,ŒßŒã
-    private int infection; //Š´õ—¦
-    private int stress; //ƒXƒgƒŒƒX
-    private int count; //ŒÂ”
+    //å¤‰æ•°
+    private int wallNo; //ç¾åœ¨ã®ç”»é¢
+    private int coin; //ãŠé‡‘
+    private int pan; //é£Ÿæ–™
+    private int mask; //ãƒã‚¹ã‚¯
+    private int date; //æ—¥ä»˜
+    private bool time; //æ™‚é–“ï¼štrue,åˆå‰ï¼šfalse,åˆå¾Œ
+    private int infection; //æ„ŸæŸ“ç‡
+    private int stress; //ã‚¹ãƒˆãƒ¬ã‚¹
+    private int count; //å€‹æ•°
+    private bool trump; //ãƒˆãƒ©ãƒ³ãƒ—
+    private bool shougi; //å°†æ£‹
+    private bool video; //ãƒ†ãƒ¬ãƒ“
+    private bool game; //æ®ç½®å‹ã‚²ãƒ¼ãƒ 
+    private bool sleep; //ç¡çœ ï¼štrue,å¯ã‚Œã‚‹ï¼šfalse,å¯ã‚Œãªã„
+    private bool futon; //å¸ƒå›£
+    private bool fleezer; //å†·è”µåº«
 
 
     // Start is called before the first frame update
@@ -58,13 +77,19 @@ public class GameManager : MonoBehaviour
     {
         wallNo = WALL_SLEEP;
 
-        coin = 0; //ppŒó•â
+        coin = 0; //ppå€™è£œ
         pan = 5;
         mask = 5;
         date = 1;
         time = true;
         infection = 0;
         stress = 0;
+        trump = false;
+        shougi = false;
+        video = false;
+        game = false;
+        sleep = true;
+        
 
         TotalUpdate();
         WallUpdate();
@@ -77,7 +102,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    //ƒoƒCƒgƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //ãƒã‚¤ãƒˆãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonJob()
     {
         UIUpdate();
@@ -85,7 +110,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //”ƒ‚¢•¨ƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //è²·ã„ç‰©ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonShopping()
     {
         UIUpdate();
@@ -93,7 +118,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //ŒâŠyƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //å¨¯æ¥½ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonGame()
     {
         UIUpdate();
@@ -101,7 +126,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //AQƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //å°±å¯ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonSleep()
     {
         UIUpdate();
@@ -109,7 +134,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //İ’èƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //è¨­å®šãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonOption()
     {
         UIUpdate();
@@ -117,7 +142,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //ƒoƒCƒg“à—eƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //ãƒã‚¤ãƒˆå†…å®¹ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonJobWage(int wage)
     {
         if(mask > 0 && pan > 0)
@@ -132,17 +157,12 @@ public class GameManager : MonoBehaviour
             infection += count;
             mask -= 1;
             pan -= 1;
-            time = !time;
-            if (time)
-            {
-                date += 1;
-            }
-
-            TotalUpdate();
+            Tomorrow();
+            PushButtonSleep();
         }
     }
 
-    //”ƒ‚¢•¨FH—¿ƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //è²·ã„ç‰©ï¼šé£Ÿæ–™ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonShoppingPan()
     {
         UIUpdate();
@@ -150,7 +170,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //”ƒ‚¢•¨Fƒ}ƒXƒNƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //è²·ã„ç‰©ï¼šãƒã‚¹ã‚¯ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonShoppingMask()
     {
         UIUpdate();
@@ -158,7 +178,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //”ƒ‚¢•¨F‰Æ“dƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //è²·ã„ç‰©ï¼šå®¶é›»ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonShoppingKaden()
     {
         UIUpdate();
@@ -166,7 +186,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //”ƒ‚¢•¨FŒâŠy•iƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //è²·ã„ç‰©ï¼šå¨¯æ¥½å“ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonShoppingGame()
     {
         UIUpdate();
@@ -174,7 +194,7 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //”ƒ‚¢•¨F–ß‚éƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //è²·ã„ç‰©ï¼šæˆ»ã‚‹ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonShoppingBack()
     {
         UIUpdate();
@@ -182,13 +202,13 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //ƒvƒ‰ƒXƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //ãƒ—ãƒ©ã‚¹ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonPlus()
     {
         count += 1;
     }
 
-    //ƒ}ƒCƒiƒXƒ{ƒ^ƒ“‚ğƒvƒbƒVƒ…
+    //ãƒã‚¤ãƒŠã‚¹ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
     public void PushButtonMinus()
     {
         if(count > 0)
@@ -197,7 +217,193 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //‚Ü‚Æ‚ß‚ÄXV
+    //è²·ã„ç‰©ï¼šãƒ‘ãƒ³ï¼šè³¼å…¥ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonShoppingPanBuy()
+    {
+        if(count * PAN <= coin && pan > 0 && mask > 0)
+        {
+            pan += count;
+            coin -= count * PAN;
+            pan -= 1;
+            mask -= 1;
+            infection += 10;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //è²·ã„ç‰©ï¼šãƒã‚¹ã‚¯ï¼šè³¼å…¥ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonShoppingMaskBuy()
+    {
+        if (count * MASK <= coin && pan > 0 && mask > 0)
+        {
+            mask += count;
+            coin -= count * MASK;
+            pan -= 1;
+            mask -= 1;
+            infection += 10;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //è²·ã„ç‰©ï¼šå®¶é›»ï¼šå¸ƒå›£ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonShoppingFutonBuy()
+    {
+        if (futon && FUTON <= coin && pan > 0 && mask > 0)
+        {
+            futon = true;
+            coin -= FUTON;
+            pan -= 1;
+            mask -= 1;
+            infection += 10;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //è²·ã„ç‰©ï¼šå®¶é›»ï¼šå†·è”µåº«ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonShoppingFleezerBuy()
+    {
+        if(fleezer && FLEEZER <= coin && pan > 0 && mask > 0)
+        {
+            fleezer = true;
+            coin -= FLEEZER;
+            pan -= 1;
+            mask -= 1;
+            infection += 10;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //è²·ã„ç‰©ï¼šå¨¯æ¥½ï¼šãƒˆãƒ©ãƒ³ãƒ—ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonShoppingTrumpBuy()
+    {
+        if (trump && TRUMP <= coin && pan > 0 && mask > 0)
+        {
+            trump = true;
+            coin -= TRUMP;
+            pan -= 1;
+            mask -= 1;
+            infection += 10;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //è²·ã„ç‰©ï¼šå¨¯æ¥½ï¼šå°†æ£‹ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonShoppingShougiBuy()
+    {
+        if (shougi && SHOUGI <= coin && pan > 0 && mask > 0)
+        {
+            shougi = true;
+            coin -= SHOUGI;
+            pan -= 1;
+            mask -= 1;
+            infection += 10;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //è²·ã„ç‰©ï¼šå¨¯æ¥½ï¼šãƒ†ãƒ¬ãƒ“ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonShoppingVideoBuy()
+    {
+        if (video && VIDEO <= coin && pan > 0 && mask > 0)
+        {
+            video = true;
+            coin -= VIDEO;
+            pan -= 1;
+            mask -= 1;
+            infection += 10;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //è²·ã„ç‰©ï¼šå¨¯æ¥½ï¼šæ®ç½®å‹ã‚²ãƒ¼ãƒ ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonShoppingGameBuy()
+    {
+        if (game && GAME <= coin && pan > 0 && mask > 0)
+        {
+            game = true;
+            coin -= GAME;
+            pan -= 1;
+            mask -= 1;
+            infection += 10;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //å¨¯æ¥½ï¼šãƒˆãƒ©ãƒ³ãƒ—ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonGameTramp()
+    {
+        if (trump)
+        {
+            stress -= 5;
+            infection -= 5;
+            pan -= 1;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //å¨¯æ¥½ï¼šå°†æ£‹ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonGameShougi()
+    {
+        if (shougi)
+        {
+            stress -= 10;
+            infection -= 5;
+            pan -= 1;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //å¨¯æ¥½ï¼šæ˜ ç”»ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonGameVideo()
+    {
+        if (video)
+        {
+            stress -= 15;
+            infection -= 5;
+            pan -= 1;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //å¨¯æ¥½ï¼šæ®ç½®å‹ã‚²ãƒ¼ãƒ ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonGameGame()
+    {
+        if (game)
+        {
+            stress -= 20;
+            infection -= 5;
+            pan -= 1;
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //å°±å¯ï¼šå°±å¯ãƒœã‚¿ãƒ³ã‚’ãƒ—ãƒƒã‚·ãƒ¥
+    public void PushButtonSleepSleep()
+    {
+        if (sleep)
+        {
+            stress -= 5;
+            infection -= 10;
+            pan -= 1;
+            Tomorrow();
+            PushButtonSleep();
+            sleep = false;
+        }
+    }
+
+    //ã¾ã¨ã‚ã¦æ›´æ–°
     void TotalUpdate()
     {
         CoinUpdate();
@@ -209,7 +415,7 @@ public class GameManager : MonoBehaviour
         SliderStressUpdate();
     }
 
-    //‰æ–ÊXV(•\¦)
+    //ç”»é¢æ›´æ–°(è¡¨ç¤º)
     void WallUpdate()
     {
         switch (wallNo)
@@ -217,58 +423,50 @@ public class GameManager : MonoBehaviour
             case WALL_JOB:
                 panelWalls.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
                 buttonJobs.SetActive(true);
-                nukoComment.SetActive(true);
                 break;
             case WALL_SHOPPING:
                 panelWalls.transform.localPosition = new Vector3(-1000.0f, 0.0f, 0.0f);
                 buttonShoppings.SetActive(true);
-                nukoComment.SetActive(true);
                 break;
             case WALL_GAME:
                 panelWalls.transform.localPosition = new Vector3(-2000.0f, 0.0f, 0.0f);
                 buttonGames.SetActive(true);
-                nukoComment.SetActive(true);
                 break;
             case WALL_SLEEP:
                 panelWalls.transform.localPosition = new Vector3(-3000.0f, 0.0f, 0.0f);
                 buttonSleeps.SetActive(true); 
-                nukoComment.SetActive(false);
                 break;
             case WALL_OPTION:
                 panelWalls.transform.localPosition = new Vector3(-4000.0f, 0.0f, 0.0f);
                 buttonOptions.SetActive(true);
-                nukoComment.SetActive(false);
                 break;
             case WALL_PANS:
                 panelWalls.transform.localPosition = new Vector3(-1000.0f, 1500.0f, 0.0f);
                 buttonShoppingPans.SetActive(true);
-                nukoComment.SetActive(true);
                 buttonShoppingBack.SetActive(true);
                 count = 0;
                 break;
             case WALL_MASK:
                 panelWalls.transform.localPosition = new Vector3(-1000.0f, 3000.0f, 0.0f);
                 buttonShoppingMasks.SetActive(true);
-                nukoComment.SetActive(true);
                 buttonShoppingBack.SetActive(true);
                 count = 0;
                 break;
             case WALL_KADENS:
                 panelWalls.transform.localPosition = new Vector3(-1000.0f, 4500.0f, 0.0f);
                 buttonShoppingKadens.SetActive(true);
-                nukoComment.SetActive(true);
                 buttonShoppingBack.SetActive(true);
                 break;
             case WALL_GAMES:
                 panelWalls.transform.localPosition = new Vector3(-1000.0f, 6000.0f, 0.0f);
                 buttonShoppingGames.SetActive(true);
-                nukoComment.SetActive(true);
                 buttonShoppingBack.SetActive(true);
                 break;
         }
+        NukoUpdate();
     }
 
-    //‰æ–ÊXV(”ñ•\¦)
+    //ç”»é¢æ›´æ–°(éè¡¨ç¤º)
     void UIUpdate()
     {
         switch (wallNo)
@@ -307,73 +505,247 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //Š´õ—¦XV
+    //ã¬ã“æ›´æ–°
+    void NukoUpdate()
+    {
+        Text targetText = textNuko.GetComponent<Text>();
+
+        switch (wallNo)
+        {
+            case WALL_JOB:
+                textNuko.SetActive(true);
+                if(infection == 100)
+                {
+                    targetText.text = "æ„ŸæŸ“ã™ã‚‹ã«ã‚ƒâ€¦";
+                }
+                else if(stress == 100)
+                {
+                    targetText.text = "è‡ªç²›ç„¡ç†ã«ã‚ƒéŠã¶ã«ã‚ƒ";
+                }
+                else if(infection > 80)
+                {
+                    targetText.text = "ã‚‚ã†æ„ŸæŸ“ã—ãã†ã«ã‚ƒâ€¦";
+                }
+                else if(stress > 80)
+                {
+                    targetText.text = "ã‚‚ã†è‡ªç²›ç„¡ç†ã«ã‚ƒâ€¦";
+                }
+                else if(infection > 60)
+                {
+                    targetText.text = "ãã‚ãã‚æ„ŸæŸ“ã—ãã†ã«ã‚ƒâ€¦";
+                }
+                else if(stress > 60)
+                {
+                    targetText.text = "ãã‚ãã‚è‡ªç²›ç„¡ç†ã«ã‚ƒâ€¦";
+                }
+                else if(infection > 40)
+                {
+                    targetText.text = "æ„ŸæŸ“ã™ã‚‹ã‹ã‚‚ã«ã‚ƒâ€¦";
+                }
+                else if(stress > 40)
+                {
+                    targetText.text = "éŠã³ãŸã„ã«ã‚ƒ";
+                }
+                else if(infection > 20)
+                {
+                    targetText.text = "æ„ŸæŸ“æ€–ã„ã«ã‚ƒ";
+                }
+                else if(stress > 20)
+                {
+                    targetText.text = "å°‘ã—éŠã³ãŸã„ã«ã‚ƒ";
+                }
+                else
+                {
+                    targetText.text = "ãŠé‡‘ç¨¼ãã«ã‚ƒ";
+                }
+                break;
+
+            case WALL_SHOPPING:
+                textNuko.SetActive(true);
+                if (infection == 100)
+                {
+                    targetText.text = "æ„ŸæŸ“ã™ã‚‹ã«ã‚ƒâ€¦";
+                }
+                else if (stress == 100)
+                {
+                    targetText.text = "è‡ªç²›ç„¡ç†ã«ã‚ƒéŠã¶ã«ã‚ƒ";
+                }
+                else if (infection > 80)
+                {
+                    targetText.text = "ã‚‚ã†æ„ŸæŸ“ã—ãã†ã«ã‚ƒâ€¦";
+                }
+                else if (stress > 80)
+                {
+                    targetText.text = "ã‚‚ã†è‡ªç²›ç„¡ç†ã«ã‚ƒâ€¦";
+                }
+                else if (infection > 60)
+                {
+                    targetText.text = "ãã‚ãã‚æ„ŸæŸ“ã—ãã†ã«ã‚ƒâ€¦";
+                }
+                else if (stress > 60)
+                {
+                    targetText.text = "ãã‚ãã‚è‡ªç²›ç„¡ç†ã«ã‚ƒâ€¦";
+                }
+                else if (infection > 40)
+                {
+                    targetText.text = "æ„ŸæŸ“ã™ã‚‹ã‹ã‚‚ã«ã‚ƒâ€¦";
+                }
+                else if (stress > 40)
+                {
+                    targetText.text = "éŠã³ãŸã„ã«ã‚ƒ";
+                }
+                else if (infection > 20)
+                {
+                    targetText.text = "æ„ŸæŸ“æ€–ã„ã«ã‚ƒ";
+                }
+                else if (stress > 20)
+                {
+                    targetText.text = "å°‘ã—éŠã³ãŸã„ã«ã‚ƒ";
+                }
+                else
+                {
+                    if(coin < 500)
+                    {
+                        targetText.text = "ãŠé‡‘ãªã„ã«ã‚ƒ";
+                    }
+                }
+                break;
+
+            case WALL_GAME:
+                textNuko.SetActive(true);
+                break;
+            case WALL_SLEEP:
+                textNuko.SetActive(false);
+                break;
+            case WALL_OPTION:
+                textNuko.SetActive(false);
+                break;
+            case WALL_PANS:
+                textNuko.SetActive(true);
+                break;
+            case WALL_MASK:
+                textNuko.SetActive(true);
+                break;
+            case WALL_KADENS:
+                textNuko.SetActive(true);
+                break;
+            case WALL_GAMES:
+                textNuko.SetActive(true);
+                break;
+        }
+    }
+
+    //æ„ŸæŸ“ç‡æ›´æ–°
     void SliderInfectionUpdate()
     {
+        if(infection > 100)
+        {
+            infection = 100;
+        }
+        if(infection < 0)
+        {
+            infection = 0;
+        }
         sliderInfection.value = infection / 100.0f;
     }
 
-    //ƒXƒgƒŒƒXXV
+    //ã‚¹ãƒˆãƒ¬ã‚¹æ›´æ–°
     void SliderStressUpdate()
     {
+        if (stress > 100)
+        {
+            stress = 100;
+        }
+        if (stress < 0)
+        {
+            stress = 0;
+        }
         sliderStress.value = stress / 100.0f;
     }
 
-    //“ú•tXV
+    //æ—¥ä»˜æ›´æ–°
     void DateUpdate()
     {
         Text targetText = textDate.GetComponent<Text>();
-        targetText.text = date + "“ú–Ú";
+        targetText.text = date + "æ—¥ç›®";
     }
 
-    //ŠÔXV
+    //æ™‚é–“æ›´æ–°
     void TimeUpdate()
     {
         Text targetText = textTime.GetComponent<Text>();
         if (time)
         {
-            targetText.text = "Œß‘O";
+            targetText.text = "åˆå‰";
             targetText.color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
         }
         else
         {
-            targetText.text = "ŒßŒã";
+            targetText.text = "åˆå¾Œ";
             targetText.color = new Color(0.0f, 0.0f, 1.0f, 1.0f);
         }
     }
 
-    //‚¨‹àXV
+    //ãŠé‡‘æ›´æ–°
     void CoinUpdate()
     {
         Text targetText = textCoin.GetComponent<Text>();
-        targetText.text = coin + "‰~";
+        targetText.text = coin + "å††";
     }
 
-    //H—¿XV
+    //é£Ÿæ–™æ›´æ–°
     void PanUpdate()
     {
         Text targetText = textPan.GetComponent<Text>();
-        targetText.text = pan + "H";
+        targetText.text = pan + "é£Ÿ";
     }
 
-    //ƒ}ƒXƒNXV
+    //ãƒã‚¹ã‚¯æ›´æ–°
     void MaskUpdate()
     {
         Text targetText = textMask.GetComponent<Text>();
-        targetText.text = mask + "–‡";
+        targetText.text = mask + "æš";
     }
 
-    //”ƒ‚¢•¨FH—¿ŒÂ”XV
+    //æ—¥æ™‚é€²è¡Œ
+    void Tomorrow()
+    {
+        sleep = true;
+        time = !time;
+        if (time)
+        {
+            date += 1;
+        }
+
+        TotalUpdate();
+    }
+
+    //è²·ã„ç‰©ï¼šé£Ÿæ–™ï¼šå€‹æ•°æ›´æ–°
     public void PanShoppingUpdate()
     {
         Text targetText = textShoppingPan.GetComponent<Text>();
-        targetText.text = count + "H";
+        targetText.text = count + "é£Ÿ";
     }
 
-    //”ƒ‚¢•¨Fƒ}ƒXƒNŒÂ”XV
+    //è²·ã„ç‰©ï¼šãƒã‚¹ã‚¯ï¼šå€‹æ•°æ›´æ–°
     public void MaskShoppingUpdate()
     {
         Text targetText = textShoppingMask.GetComponent<Text>();
-        targetText.text = count + "–‡";
+        targetText.text = count + "æš";
     }
+
+    //è²·ã„ç‰©ï¼šé£Ÿæ–™ï¼šé‡‘é¡æ›´æ–°
+    public void PanTotalShoppingUpdate()
+    {
+        Text targetText = textShoppingTotalPan.GetComponent<Text>();
+        targetText.text = count * PAN + "å††";
+    }
+
+    //è²·ã„ç‰©ï¼šãƒã‚¹ã‚¯ï¼šé‡‘é¡æ›´æ–°
+    public void MaskTotalShoppingUpdate()
+    {
+        Text targetText = textShoppingTotalMask.GetComponent<Text>();
+        targetText.text = count * MASK + "å††";
+    }
+
 }
