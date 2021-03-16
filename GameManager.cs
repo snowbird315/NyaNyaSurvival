@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     private const int PAN = 300; //金額：食料
     private const int MASK = 200; //金額：マスク
     private const int FUTON = 5000; //金額：布団
+    private const int DESK = 7500; //金額：机
     private const int FLEEZER = 10000; //金額：冷蔵庫
     private const int TRUMP = 500; //金額：トランプ
     private const int SHOUGI = 2000; //金額：将棋
@@ -40,6 +41,7 @@ public class GameManager : MonoBehaviour
     public GameObject buttonShoppingKadens; //ボタン：買い物：家電
     public GameObject buttonShoppingGames; //ボタン：買い物：娯楽品
     public GameObject buttonShoppingBack; //ボタン：買い物：戻る
+
     public GameObject textCoin; //テキスト：お金
     public GameObject textPan; //テキスト：食料
     public GameObject textMask; //テキスト：マスク
@@ -47,10 +49,19 @@ public class GameManager : MonoBehaviour
     public GameObject textTime; //テキスト：時間
     public GameObject textNuko; //テキスト：ぬこ
     public GameObject imageNuko; //画像：ぬこ
+    public GameObject nukoComment; //ぬこ全部
     public GameObject textShoppingPan; //テキスト：買い物：食料：個数
     public GameObject textShoppingMask; //テキスト：買い物：マスク：個数
     public GameObject textShoppingTotalPan; //テキスト：買い物：食料：金額
     public GameObject textShoppingTotalMask; //テキスト：買い物：マスク：金額
+
+    public GameObject imageFuton; //画像：布団
+    public GameObject imageFleezer; //画像：冷蔵庫
+    public GameObject imageDesk; //画像：机
+    public GameObject imageTrump; //画像：トランプ
+    public GameObject imageShougi; //画像：将棋
+    public GameObject imageVideo; //画像：テレビ
+    public GameObject imageGame; //画像：ゲーム
 
 
     //変数
@@ -60,8 +71,8 @@ public class GameManager : MonoBehaviour
     private int mask; //マスク
     private int date; //日付
     private bool time; //時間：true,午前：false,午後
-    private int infection; //感染率
-    private int stress; //ストレス
+    private float infection; //感染率
+    private float  stress; //ストレス
     private int count; //個数
     private bool trump; //トランプ
     private bool shougi; //将棋
@@ -70,6 +81,9 @@ public class GameManager : MonoBehaviour
     private bool sleep; //睡眠：true,寝れる：false,寝れない
     private bool futon; //布団
     private bool fleezer; //冷蔵庫
+    private bool desk; //机
+    private int status; //状況
+    private float percent; //ストレス係数(?)
 
 
     // Start is called before the first frame update
@@ -89,6 +103,8 @@ public class GameManager : MonoBehaviour
         video = false;
         game = false;
         sleep = true;
+        status = -1;
+        percent = 1;
         
 
         TotalUpdate();
@@ -154,7 +170,18 @@ public class GameManager : MonoBehaviour
     {
         if(mask > 0 && pan > 0)
         {
-            infection += count;
+            if(status == WALL_JOB)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_JOB;
+            infection += count * percent;
+            stress += 10 * percent;
             mask -= 1;
             pan -= 1;
             Tomorrow();
@@ -222,11 +249,21 @@ public class GameManager : MonoBehaviour
     {
         if(count * PAN <= coin && pan > 0 && mask > 0)
         {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
             pan += count;
             coin -= count * PAN;
             pan -= 1;
             mask -= 1;
-            infection += 10;
+            infection += 10 * percent;
             Tomorrow();
             PushButtonSleep();
         }
@@ -237,11 +274,21 @@ public class GameManager : MonoBehaviour
     {
         if (count * MASK <= coin && pan > 0 && mask > 0)
         {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
             mask += count;
             coin -= count * MASK;
             pan -= 1;
             mask -= 1;
-            infection += 10;
+            infection += 10 * percent;
             Tomorrow();
             PushButtonSleep();
         }
@@ -250,13 +297,50 @@ public class GameManager : MonoBehaviour
     //買い物：家電：布団ボタンをプッシュ
     public void PushButtonShoppingFutonBuy()
     {
-        if (futon && FUTON <= coin && pan > 0 && mask > 0)
+        if (!futon && FUTON <= coin && pan > 0 && mask > 0)
         {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
             futon = true;
             coin -= FUTON;
             pan -= 1;
             mask -= 1;
-            infection += 10;
+            infection += 10 * percent;
+            imageFuton.SetActive(true);
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
+    //買い物：家電：机ボタンをプッシュ
+    public void PushButtonShoppingDeskBuy()
+    {
+        if (!desk && DESK <= coin && pan > 0 && mask > 0)
+        {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
+            desk = true;
+            coin -= DESK;
+            pan -= 1;
+            mask -= 1;
+            infection += 10 * percent;
+            imageDesk.SetActive(true);
             Tomorrow();
             PushButtonSleep();
         }
@@ -265,13 +349,24 @@ public class GameManager : MonoBehaviour
     //買い物：家電：冷蔵庫ボタンをプッシュ
     public void PushButtonShoppingFleezerBuy()
     {
-        if(fleezer && FLEEZER <= coin && pan > 0 && mask > 0)
+        if(!fleezer && FLEEZER <= coin && pan > 0 && mask > 0)
         {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
             fleezer = true;
             coin -= FLEEZER;
             pan -= 1;
             mask -= 1;
-            infection += 10;
+            infection += 10 * percent;
+            imageFleezer.SetActive(true);
             Tomorrow();
             PushButtonSleep();
         }
@@ -280,13 +375,24 @@ public class GameManager : MonoBehaviour
     //買い物：娯楽：トランプボタンをプッシュ
     public void PushButtonShoppingTrumpBuy()
     {
-        if (trump && TRUMP <= coin && pan > 0 && mask > 0)
+        if (!trump && TRUMP <= coin && pan > 0 && mask > 0)
         {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
             trump = true;
             coin -= TRUMP;
             pan -= 1;
             mask -= 1;
-            infection += 10;
+            infection += 10 * percent;
+            imageTrump.SetActive(true);
             Tomorrow();
             PushButtonSleep();
         }
@@ -295,13 +401,24 @@ public class GameManager : MonoBehaviour
     //買い物：娯楽：将棋ボタンをプッシュ
     public void PushButtonShoppingShougiBuy()
     {
-        if (shougi && SHOUGI <= coin && pan > 0 && mask > 0)
+        if (!shougi && SHOUGI <= coin && pan > 0 && mask > 0)
         {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
             shougi = true;
             coin -= SHOUGI;
             pan -= 1;
             mask -= 1;
-            infection += 10;
+            infection += 10 * percent;
+            imageShougi.SetActive(true);
             Tomorrow();
             PushButtonSleep();
         }
@@ -310,13 +427,24 @@ public class GameManager : MonoBehaviour
     //買い物：娯楽：テレビボタンをプッシュ
     public void PushButtonShoppingVideoBuy()
     {
-        if (video && VIDEO <= coin && pan > 0 && mask > 0)
+        if (!video && VIDEO <= coin && pan > 0 && mask > 0)
         {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
             video = true;
             coin -= VIDEO;
             pan -= 1;
             mask -= 1;
-            infection += 10;
+            infection += 10 * percent;
+            imageVideo.SetActive(true);
             Tomorrow();
             PushButtonSleep();
         }
@@ -325,13 +453,24 @@ public class GameManager : MonoBehaviour
     //買い物：娯楽：据置型ゲームボタンをプッシュ
     public void PushButtonShoppingGameBuy()
     {
-        if (game && GAME <= coin && pan > 0 && mask > 0)
+        if (!game && GAME <= coin && pan > 0 && mask > 0)
         {
+            if (status == WALL_SHOPPING)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_SHOPPING;
             game = true;
             coin -= GAME;
             pan -= 1;
             mask -= 1;
-            infection += 10;
+            infection += 10 * percent;
+            imageGame.SetActive(true);
             Tomorrow();
             PushButtonSleep();
         }
@@ -340,10 +479,20 @@ public class GameManager : MonoBehaviour
     //娯楽：トランプボタンをプッシュ
     public void PushButtonGameTramp()
     {
-        if (trump)
+        if (trump && pan > 0)
         {
+            if (status == WALL_GAME)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_GAME;
             stress -= 5;
-            infection -= 5;
+            infection -= 5 / percent;
             pan -= 1;
             Tomorrow();
             PushButtonSleep();
@@ -353,10 +502,20 @@ public class GameManager : MonoBehaviour
     //娯楽：将棋ボタンをプッシュ
     public void PushButtonGameShougi()
     {
-        if (shougi)
+        if (shougi && pan > 0)
         {
+            if (status == WALL_GAME)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_GAME;
             stress -= 10;
-            infection -= 5;
+            infection -= 5 * percent;
             pan -= 1;
             Tomorrow();
             PushButtonSleep();
@@ -366,10 +525,20 @@ public class GameManager : MonoBehaviour
     //娯楽：映画ボタンをプッシュ
     public void PushButtonGameVideo()
     {
-        if (video)
+        if (video && pan > 0)
         {
+            if (status == WALL_GAME)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_GAME;
             stress -= 15;
-            infection -= 5;
+            infection -= 5 * percent;
             pan -= 1;
             Tomorrow();
             PushButtonSleep();
@@ -379,10 +548,20 @@ public class GameManager : MonoBehaviour
     //娯楽：据置型ゲームボタンをプッシュ
     public void PushButtonGameGame()
     {
-        if (game)
+        if (game && video && pan > 0)
         {
+            if (status == WALL_GAME)
+            {
+                percent *= 1.25f;
+
+            }
+            else
+            {
+                percent = 1;
+            }
+            status = WALL_GAME;
             stress -= 20;
-            infection -= 5;
+            infection -= 5 * percent;
             pan -= 1;
             Tomorrow();
             PushButtonSleep();
@@ -513,8 +692,16 @@ public class GameManager : MonoBehaviour
         switch (wallNo)
         {
             case WALL_JOB:
-                textNuko.SetActive(true);
-                if(infection == 100)
+                nukoComment.SetActive(true);
+                if(mask < 1)
+                {
+                    targetText.text = "マスクがないにゃ";
+                }
+                else if(pan < 1)
+                {
+                    targetText.text = "食べ物がないにゃ";
+                }
+                else if(infection == 100)
                 {
                     targetText.text = "感染するにゃ…";
                 }
@@ -561,8 +748,16 @@ public class GameManager : MonoBehaviour
                 break;
 
             case WALL_SHOPPING:
-                textNuko.SetActive(true);
-                if (infection == 100)
+                nukoComment.SetActive(true);
+                if (mask < 1)
+                {
+                    targetText.text = "マスクがないにゃ";
+                }
+                else if (pan < 1)
+                {
+                    targetText.text = "食べ物がないにゃ";
+                }
+                else if (infection == 100)
                 {
                     targetText.text = "感染するにゃ…";
                 }
@@ -604,33 +799,363 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    if(coin < 500)
+                    if(coin < MASK)
                     {
                         targetText.text = "お金ないにゃ";
+                    }
+                    else
+                    {
+                        targetText.text = "買い物するにゃ";
                     }
                 }
                 break;
 
             case WALL_GAME:
-                textNuko.SetActive(true);
+                nukoComment.SetActive(true);
+                if(!(trump || shougi || video || game)){
+                    targetText.text = "遊ぶ物がないにゃ";
+                }
+                else if (stress == 100)
+                {
+                    targetText.text = "自粛無理にゃ遊ぶにゃ";
+                }
+                else if (stress > 80)
+                {
+                    targetText.text = "もう自粛無理にゃ…";
+                }
+                else if (stress > 60)
+                {
+                    targetText.text = "そろそろ自粛無理にゃ…";
+                }
+                else if (stress > 40)
+                {
+                    targetText.text = "遊びたいにゃ";
+                }
+                else if (stress > 20)
+                {
+                    targetText.text = "少し遊びたいにゃ";
+                }
+                else if(stress == 0)
+                {
+                    targetText.text = "ストレスないにゃ";
+                }
+                else
+                {
+                    targetText.text = "遊ぶのにゃ？";
+                }
                 break;
             case WALL_SLEEP:
-                textNuko.SetActive(false);
+                nukoComment.SetActive(false);
                 break;
             case WALL_OPTION:
-                textNuko.SetActive(false);
+                nukoComment.SetActive(false);
                 break;
             case WALL_PANS:
-                textNuko.SetActive(true);
+                nukoComment.SetActive(true);
+                if (mask < 1)
+                {
+                    targetText.text = "マスクがないにゃ";
+                }
+                else if (pan < 1)
+                {
+                    targetText.text = "食べ物がないにゃ";
+                }
+                else if (infection == 100)
+                {
+                    targetText.text = "感染するにゃ…";
+                }
+                else if (stress == 100)
+                {
+                    targetText.text = "自粛無理にゃ遊ぶにゃ";
+                }
+                else if (infection > 80)
+                {
+                    targetText.text = "もう感染しそうにゃ…";
+                }
+                else if (stress > 80)
+                {
+                    targetText.text = "もう自粛無理にゃ…";
+                }
+                else if (infection > 60)
+                {
+                    targetText.text = "そろそろ感染しそうにゃ…";
+                }
+                else if (stress > 60)
+                {
+                    targetText.text = "そろそろ自粛無理にゃ…";
+                }
+                else if (infection > 40)
+                {
+                    targetText.text = "感染するかもにゃ…";
+                }
+                else if (stress > 40)
+                {
+                    targetText.text = "遊びたいにゃ";
+                }
+                else if (infection > 20)
+                {
+                    targetText.text = "感染怖いにゃ";
+                }
+                else if (stress > 20)
+                {
+                    targetText.text = "少し遊びたいにゃ";
+                }
+                else
+                {
+                    if(coin < PAN)
+                    {
+                        targetText.text = "お金ないにゃ";
+                    }
+                    else
+                    {
+                        targetText.text = "食べ物買うにゃ";
+                    }
+                }
                 break;
             case WALL_MASK:
-                textNuko.SetActive(true);
+                nukoComment.SetActive(true);
+                if (mask < 1)
+                {
+                    targetText.text = "マスクがないにゃ";
+                }
+                else if (pan < 1)
+                {
+                    targetText.text = "食べ物がないにゃ";
+                }
+                else if (infection == 100)
+                {
+                    targetText.text = "感染するにゃ…";
+                }
+                else if (stress == 100)
+                {
+                    targetText.text = "自粛無理にゃ遊ぶにゃ";
+                }
+                else if (infection > 80)
+                {
+                    targetText.text = "もう感染しそうにゃ…";
+                }
+                else if (stress > 80)
+                {
+                    targetText.text = "もう自粛無理にゃ…";
+                }
+                else if (infection > 60)
+                {
+                    targetText.text = "そろそろ感染しそうにゃ…";
+                }
+                else if (stress > 60)
+                {
+                    targetText.text = "そろそろ自粛無理にゃ…";
+                }
+                else if (infection > 40)
+                {
+                    targetText.text = "感染するかもにゃ…";
+                }
+                else if (stress > 40)
+                {
+                    targetText.text = "遊びたいにゃ";
+                }
+                else if (infection > 20)
+                {
+                    targetText.text = "感染怖いにゃ";
+                }
+                else if (stress > 20)
+                {
+                    targetText.text = "少し遊びたいにゃ";
+                }
+                else
+                {
+                    if (coin < MASK)
+                    {
+                        targetText.text = "お金ないにゃ";
+                    }
+                    else
+                    {
+                        targetText.text = "マスク買うにゃ";
+                    }
+                }
                 break;
             case WALL_KADENS:
-                textNuko.SetActive(true);
+                nukoComment.SetActive(true);
+                if (mask < 1)
+                {
+                    targetText.text = "マスクがないにゃ";
+                }
+                else if (pan < 1)
+                {
+                    targetText.text = "食べ物がないにゃ";
+                }
+                else if (infection == 100)
+                {
+                    targetText.text = "感染するにゃ…";
+                }
+                else if (stress == 100)
+                {
+                    targetText.text = "自粛無理にゃ遊ぶにゃ";
+                }
+                else if (infection > 80)
+                {
+                    targetText.text = "もう感染しそうにゃ…";
+                }
+                else if (stress > 80)
+                {
+                    targetText.text = "もう自粛無理にゃ…";
+                }
+                else if (infection > 60)
+                {
+                    targetText.text = "そろそろ感染しそうにゃ…";
+                }
+                else if (stress > 60)
+                {
+                    targetText.text = "そろそろ自粛無理にゃ…";
+                }
+                else if (infection > 40)
+                {
+                    targetText.text = "感染するかもにゃ…";
+                }
+                else if (stress > 40)
+                {
+                    targetText.text = "遊びたいにゃ";
+                }
+                else if (infection > 20)
+                {
+                    targetText.text = "感染怖いにゃ";
+                }
+                else if (stress > 20)
+                {
+                    targetText.text = "少し遊びたいにゃ";
+                }
+                else
+                {
+                    if (!futon)
+                    {
+                        if (coin < FUTON)
+                        {
+                            targetText.text = "お金ないにゃ";
+                        }
+                        else
+                        {
+                            targetText.text = "布団買うにゃ";
+                        }
+                    }
+                    else if (!fleezer)
+                    {
+                        if(coin < FLEEZER)
+                        {
+                            targetText.text = "お金ないにゃ";
+                        }
+                        else
+                        {
+                            targetText.text = "冷蔵庫買うにゃ";
+                        }
+                    }
+
+                    else
+                    {
+                        targetText.text = "家電そろってるにゃ";
+                    }
+                }
                 break;
             case WALL_GAMES:
-                textNuko.SetActive(true);
+                nukoComment.SetActive(true);
+                if (mask < 1)
+                {
+                    targetText.text = "マスクがないにゃ";
+                }
+                else if (pan < 1)
+                {
+                    targetText.text = "食べ物がないにゃ";
+                }
+                else if (infection == 100)
+                {
+                    targetText.text = "感染するにゃ…";
+                }
+                else if (stress == 100)
+                {
+                    targetText.text = "自粛無理にゃ遊ぶにゃ";
+                }
+                else if (infection > 80)
+                {
+                    targetText.text = "もう感染しそうにゃ…";
+                }
+                else if (stress > 80)
+                {
+                    targetText.text = "もう自粛無理にゃ…";
+                }
+                else if (infection > 60)
+                {
+                    targetText.text = "そろそろ感染しそうにゃ…";
+                }
+                else if (stress > 60)
+                {
+                    targetText.text = "そろそろ自粛無理にゃ…";
+                }
+                else if (infection > 40)
+                {
+                    targetText.text = "感染するかもにゃ…";
+                }
+                else if (stress > 40)
+                {
+                    targetText.text = "遊びたいにゃ";
+                }
+                else if (infection > 20)
+                {
+                    targetText.text = "感染怖いにゃ";
+                }
+                else if (stress > 20)
+                {
+                    targetText.text = "少し遊びたいにゃ";
+                }
+                else
+                {
+                    if (!trump)
+                    {
+                        if (coin < TRUMP)
+                        {
+                            targetText.text = "お金ないにゃ";
+                        }
+                        else
+                        {
+                            targetText.text = "トランプ買うにゃ";
+                        }
+                    }
+                    else if (!shougi)
+                    {
+                        if (coin < SHOUGI)
+                        {
+                            targetText.text = "お金ないにゃ";
+                        }
+                        else
+                        {
+                            targetText.text = "将棋買うにゃ";
+                        }
+                    }
+                    else if (!video)
+                    {
+                        if(coin < VIDEO)
+                        {
+                            targetText.text = "お金ないにゃ";
+                        }
+                        else
+                        {
+                            targetText.text = "テレビ買うにゃ";
+                        }
+                    }
+                    else if (!game)
+                    {
+                        if(coin < GAME)
+                        {
+                            targetText.text = "お金ないにゃ";
+                        }
+                        else
+                        {
+                            targetText.text = "ゲーム買うにゃ";
+                        }
+                    }
+                    else
+                    {
+                        targetText.text = "遊ぶもの揃ったにゃ";
+                    }
+                }
                 break;
         }
     }
