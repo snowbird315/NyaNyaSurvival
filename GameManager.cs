@@ -30,7 +30,6 @@ public class GameManager : MonoBehaviour
     //ゲームオブジェクト
     public GameObject panelWalls; //パネル：壁
     public Slider sliderInfection; //スライダー：感染率
-    public Slider sliderStress; //スライダー：ストレス
     public GameObject buttonJobs; //ボタン：バイト
     public GameObject buttonShoppings; //ボタン：買い物
     public GameObject buttonGames; //ボタン：娯楽
@@ -41,6 +40,9 @@ public class GameManager : MonoBehaviour
     public GameObject buttonShoppingKadens; //ボタン：買い物：家電
     public GameObject buttonShoppingGames; //ボタン：買い物：娯楽品
     public GameObject buttonShoppingBack; //ボタン：買い物：戻る
+    public GameObject textInfection; //テキスト：感染
+    public GameObject pause; //ポーズ用画像UI
+    public GameObject buttonReset;
 
     public GameObject textCoin; //テキスト：お金
     public GameObject textPan; //テキスト：食料
@@ -72,7 +74,6 @@ public class GameManager : MonoBehaviour
     private int date; //日付
     private bool time; //時間：true,午前：false,午後
     private float infection; //感染率
-    private float  stress; //ストレス
     private int count; //個数
     private bool trump; //トランプ
     private bool shougi; //将棋
@@ -85,27 +86,121 @@ public class GameManager : MonoBehaviour
     private int status; //状況
     private float percent; //ストレス係数(?)
 
+    private int DATEs;
+    private int TIMEs;
+    private int TRUMPs;
+    private int SHOUGIs;
+    private int VIDEOs;
+    private int GAMEs;
+    private int SLEEPs;
+
 
     // Start is called before the first frame update
     void Start()
     {
         wallNo = WALL_SLEEP;
 
-        coin = 0; //pp候補
-        pan = 5;
-        mask = 5;
-        date = 1;
-        time = true;
-        infection = 0;
-        stress = 0;
-        trump = false;
-        shougi = false;
-        video = false;
-        game = false;
-        sleep = true;
-        status = -1;
-        percent = 1;
-        
+        if (PlayerPrefs.HasKey("COIN"))
+        {
+            coin = PlayerPrefs.GetInt("COIN");
+            pan = PlayerPrefs.GetInt("PAN");
+            mask = PlayerPrefs.GetInt("MASK");
+            date = PlayerPrefs.GetInt("DATE");
+            TIMEs = PlayerPrefs.GetInt("TIME");
+            infection = PlayerPrefs.GetFloat("INFECTION");
+            TRUMPs = PlayerPrefs.GetInt("TRUMP");
+            SHOUGIs = PlayerPrefs.GetInt("SHOUGI");
+            VIDEOs = PlayerPrefs.GetInt("VIDEO");
+            GAMEs = PlayerPrefs.GetInt("GAME");
+            SLEEPs = PlayerPrefs.GetInt("SLEEP");
+            status = PlayerPrefs.GetInt("STATUS");
+            percent = PlayerPrefs.GetFloat("PERCENT");
+
+            if(TIMEs == 1)
+            {
+                time = true;
+            }
+            else
+            {
+                time = false;
+            }
+
+            if(TRUMPs == 1)
+            {
+                trump = true;
+            }
+            else
+            {
+                trump = false;
+            }
+
+            if (SHOUGIs == 1)
+            {
+                shougi = true;
+            }
+            else
+            {
+                shougi = false;
+            }
+
+            if (VIDEOs == 1)
+            {
+                video = true;
+            }
+            else
+            {
+                video = false;
+            }
+
+            if (GAMEs == 1)
+            {
+                game = true;
+            }
+            else
+            {
+                game = false;
+            }
+
+            if(SLEEPs == 1)
+            {
+                sleep = true;
+            }
+            else
+            {
+                sleep = false;
+            }
+        }
+        else
+        {
+            coin = 0; 
+            pan = 5;
+            mask = 5;
+            date = 1;
+            time = true;
+            infection = 0;
+            trump = false;
+            shougi = false;
+            video = false;
+            game = false;
+            sleep = true;
+            status = -1;
+            percent = 1;
+
+            PlayerPrefs.SetInt("COIN", coin);
+            PlayerPrefs.SetInt("PAN",pan);
+            PlayerPrefs.SetInt("MASK",mask);
+            PlayerPrefs.SetInt("DATE",date);
+            PlayerPrefs.SetInt("TIME",1);
+            PlayerPrefs.SetFloat("INFECTION",infection);
+            PlayerPrefs.SetInt("TRUMP",0);
+            PlayerPrefs.SetInt("SHOUGI",0);
+            PlayerPrefs.SetInt("VIDEO",0);
+            PlayerPrefs.SetInt("GAME",0);
+            PlayerPrefs.SetInt("SLEEP",1);
+            PlayerPrefs.SetInt("STATUS",status);
+            PlayerPrefs.SetFloat("PERCENT",percent);
+        }
+
 
         TotalUpdate();
         WallUpdate();
@@ -181,11 +276,13 @@ public class GameManager : MonoBehaviour
             }
             status = WALL_JOB;
             infection += count * percent;
-            stress += 10 * percent;
             mask -= 1;
             pan -= 1;
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -264,8 +361,11 @@ public class GameManager : MonoBehaviour
             pan -= 1;
             mask -= 1;
             infection += 10 * percent;
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -289,8 +389,11 @@ public class GameManager : MonoBehaviour
             pan -= 1;
             mask -= 1;
             infection += 10 * percent;
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -315,8 +418,11 @@ public class GameManager : MonoBehaviour
             mask -= 1;
             infection += 10 * percent;
             imageFuton.SetActive(true);
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -341,8 +447,11 @@ public class GameManager : MonoBehaviour
             mask -= 1;
             infection += 10 * percent;
             imageDesk.SetActive(true);
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -367,8 +476,11 @@ public class GameManager : MonoBehaviour
             mask -= 1;
             infection += 10 * percent;
             imageFleezer.SetActive(true);
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -393,8 +505,11 @@ public class GameManager : MonoBehaviour
             mask -= 1;
             infection += 10 * percent;
             imageTrump.SetActive(true);
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -419,8 +534,11 @@ public class GameManager : MonoBehaviour
             mask -= 1;
             infection += 10 * percent;
             imageShougi.SetActive(true);
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -445,8 +563,11 @@ public class GameManager : MonoBehaviour
             mask -= 1;
             infection += 10 * percent;
             imageVideo.SetActive(true);
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -471,8 +592,11 @@ public class GameManager : MonoBehaviour
             mask -= 1;
             infection += 10 * percent;
             imageGame.SetActive(true);
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -483,7 +607,7 @@ public class GameManager : MonoBehaviour
         {
             if (status == WALL_GAME)
             {
-                percent *= 1.25f;
+                percent *= 0.75f;
 
             }
             else
@@ -491,11 +615,13 @@ public class GameManager : MonoBehaviour
                 percent = 1;
             }
             status = WALL_GAME;
-            stress -= 5;
-            infection -= 5 / percent;
+            infection -= 5 * percent;
             pan -= 1;
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -506,7 +632,7 @@ public class GameManager : MonoBehaviour
         {
             if (status == WALL_GAME)
             {
-                percent *= 1.25f;
+                percent *= 0.75f;
 
             }
             else
@@ -514,11 +640,13 @@ public class GameManager : MonoBehaviour
                 percent = 1;
             }
             status = WALL_GAME;
-            stress -= 10;
-            infection -= 5 * percent;
+            infection -= 10 * percent;
             pan -= 1;
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -529,7 +657,7 @@ public class GameManager : MonoBehaviour
         {
             if (status == WALL_GAME)
             {
-                percent *= 1.25f;
+                percent *= 0.75f;
 
             }
             else
@@ -537,11 +665,13 @@ public class GameManager : MonoBehaviour
                 percent = 1;
             }
             status = WALL_GAME;
-            stress -= 15;
-            infection -= 5 * percent;
+            infection -= 12 * percent;
             pan -= 1;
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
@@ -552,7 +682,7 @@ public class GameManager : MonoBehaviour
         {
             if (status == WALL_GAME)
             {
-                percent *= 1.25f;
+                percent *= 0.75f;
 
             }
             else
@@ -560,26 +690,36 @@ public class GameManager : MonoBehaviour
                 percent = 1;
             }
             status = WALL_GAME;
-            stress -= 20;
-            infection -= 5 * percent;
+            infection -= 15 * percent;
             pan -= 1;
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
         }
     }
 
     //就寝：就寝ボタンをプッシュ
     public void PushButtonSleepSleep()
     {
-        if (sleep)
+        if (sleep && pan > 0)
         {
-            stress -= 5;
             infection -= 10;
             pan -= 1;
-            Tomorrow();
-            PushButtonSleep();
+            if (InfectionCheck())
+            {
+                Tomorrow();
+                PushButtonSleep();
+            }
             sleep = false;
         }
+    }
+
+    //感染：リセットボタンをプッシュ
+    public void PushButtonReset()
+    {
+        Reset();
     }
 
     //まとめて更新
@@ -591,7 +731,6 @@ public class GameManager : MonoBehaviour
         DateUpdate();
         TimeUpdate();
         SliderInfectionUpdate();
-        SliderStressUpdate();
     }
 
     //画面更新(表示)
@@ -705,41 +844,21 @@ public class GameManager : MonoBehaviour
                 {
                     targetText.text = "感染するにゃ…";
                 }
-                else if(stress == 100)
-                {
-                    targetText.text = "自粛無理にゃ遊ぶにゃ";
-                }
                 else if(infection > 80)
                 {
                     targetText.text = "もう感染しそうにゃ…";
-                }
-                else if(stress > 80)
-                {
-                    targetText.text = "もう自粛無理にゃ…";
                 }
                 else if(infection > 60)
                 {
                     targetText.text = "そろそろ感染しそうにゃ…";
                 }
-                else if(stress > 60)
-                {
-                    targetText.text = "そろそろ自粛無理にゃ…";
-                }
                 else if(infection > 40)
                 {
                     targetText.text = "感染するかもにゃ…";
                 }
-                else if(stress > 40)
-                {
-                    targetText.text = "遊びたいにゃ";
-                }
                 else if(infection > 20)
                 {
                     targetText.text = "感染怖いにゃ";
-                }
-                else if(stress > 20)
-                {
-                    targetText.text = "少し遊びたいにゃ";
                 }
                 else
                 {
@@ -761,41 +880,21 @@ public class GameManager : MonoBehaviour
                 {
                     targetText.text = "感染するにゃ…";
                 }
-                else if (stress == 100)
-                {
-                    targetText.text = "自粛無理にゃ遊ぶにゃ";
-                }
                 else if (infection > 80)
                 {
                     targetText.text = "もう感染しそうにゃ…";
-                }
-                else if (stress > 80)
-                {
-                    targetText.text = "もう自粛無理にゃ…";
                 }
                 else if (infection > 60)
                 {
                     targetText.text = "そろそろ感染しそうにゃ…";
                 }
-                else if (stress > 60)
-                {
-                    targetText.text = "そろそろ自粛無理にゃ…";
-                }
                 else if (infection > 40)
                 {
                     targetText.text = "感染するかもにゃ…";
                 }
-                else if (stress > 40)
-                {
-                    targetText.text = "遊びたいにゃ";
-                }
                 else if (infection > 20)
                 {
                     targetText.text = "感染怖いにゃ";
-                }
-                else if (stress > 20)
-                {
-                    targetText.text = "少し遊びたいにゃ";
                 }
                 else
                 {
@@ -814,34 +913,6 @@ public class GameManager : MonoBehaviour
                 nukoComment.SetActive(true);
                 if(!(trump || shougi || video || game)){
                     targetText.text = "遊ぶ物がないにゃ";
-                }
-                else if (stress == 100)
-                {
-                    targetText.text = "自粛無理にゃ遊ぶにゃ";
-                }
-                else if (stress > 80)
-                {
-                    targetText.text = "もう自粛無理にゃ…";
-                }
-                else if (stress > 60)
-                {
-                    targetText.text = "そろそろ自粛無理にゃ…";
-                }
-                else if (stress > 40)
-                {
-                    targetText.text = "遊びたいにゃ";
-                }
-                else if (stress > 20)
-                {
-                    targetText.text = "少し遊びたいにゃ";
-                }
-                else if(stress == 0)
-                {
-                    targetText.text = "ストレスないにゃ";
-                }
-                else
-                {
-                    targetText.text = "遊ぶのにゃ？";
                 }
                 break;
             case WALL_SLEEP:
@@ -864,41 +935,21 @@ public class GameManager : MonoBehaviour
                 {
                     targetText.text = "感染するにゃ…";
                 }
-                else if (stress == 100)
-                {
-                    targetText.text = "自粛無理にゃ遊ぶにゃ";
-                }
                 else if (infection > 80)
                 {
                     targetText.text = "もう感染しそうにゃ…";
-                }
-                else if (stress > 80)
-                {
-                    targetText.text = "もう自粛無理にゃ…";
                 }
                 else if (infection > 60)
                 {
                     targetText.text = "そろそろ感染しそうにゃ…";
                 }
-                else if (stress > 60)
-                {
-                    targetText.text = "そろそろ自粛無理にゃ…";
-                }
                 else if (infection > 40)
                 {
                     targetText.text = "感染するかもにゃ…";
                 }
-                else if (stress > 40)
-                {
-                    targetText.text = "遊びたいにゃ";
-                }
                 else if (infection > 20)
                 {
                     targetText.text = "感染怖いにゃ";
-                }
-                else if (stress > 20)
-                {
-                    targetText.text = "少し遊びたいにゃ";
                 }
                 else
                 {
@@ -926,41 +977,21 @@ public class GameManager : MonoBehaviour
                 {
                     targetText.text = "感染するにゃ…";
                 }
-                else if (stress == 100)
-                {
-                    targetText.text = "自粛無理にゃ遊ぶにゃ";
-                }
                 else if (infection > 80)
                 {
                     targetText.text = "もう感染しそうにゃ…";
-                }
-                else if (stress > 80)
-                {
-                    targetText.text = "もう自粛無理にゃ…";
                 }
                 else if (infection > 60)
                 {
                     targetText.text = "そろそろ感染しそうにゃ…";
                 }
-                else if (stress > 60)
-                {
-                    targetText.text = "そろそろ自粛無理にゃ…";
-                }
                 else if (infection > 40)
                 {
                     targetText.text = "感染するかもにゃ…";
                 }
-                else if (stress > 40)
-                {
-                    targetText.text = "遊びたいにゃ";
-                }
                 else if (infection > 20)
                 {
                     targetText.text = "感染怖いにゃ";
-                }
-                else if (stress > 20)
-                {
-                    targetText.text = "少し遊びたいにゃ";
                 }
                 else
                 {
@@ -988,41 +1019,21 @@ public class GameManager : MonoBehaviour
                 {
                     targetText.text = "感染するにゃ…";
                 }
-                else if (stress == 100)
-                {
-                    targetText.text = "自粛無理にゃ遊ぶにゃ";
-                }
                 else if (infection > 80)
                 {
                     targetText.text = "もう感染しそうにゃ…";
-                }
-                else if (stress > 80)
-                {
-                    targetText.text = "もう自粛無理にゃ…";
                 }
                 else if (infection > 60)
                 {
                     targetText.text = "そろそろ感染しそうにゃ…";
                 }
-                else if (stress > 60)
-                {
-                    targetText.text = "そろそろ自粛無理にゃ…";
-                }
                 else if (infection > 40)
                 {
                     targetText.text = "感染するかもにゃ…";
                 }
-                else if (stress > 40)
-                {
-                    targetText.text = "遊びたいにゃ";
-                }
                 else if (infection > 20)
                 {
                     targetText.text = "感染怖いにゃ";
-                }
-                else if (stress > 20)
-                {
-                    targetText.text = "少し遊びたいにゃ";
                 }
                 else
                 {
@@ -1069,41 +1080,21 @@ public class GameManager : MonoBehaviour
                 {
                     targetText.text = "感染するにゃ…";
                 }
-                else if (stress == 100)
-                {
-                    targetText.text = "自粛無理にゃ遊ぶにゃ";
-                }
                 else if (infection > 80)
                 {
                     targetText.text = "もう感染しそうにゃ…";
-                }
-                else if (stress > 80)
-                {
-                    targetText.text = "もう自粛無理にゃ…";
                 }
                 else if (infection > 60)
                 {
                     targetText.text = "そろそろ感染しそうにゃ…";
                 }
-                else if (stress > 60)
-                {
-                    targetText.text = "そろそろ自粛無理にゃ…";
-                }
                 else if (infection > 40)
                 {
                     targetText.text = "感染するかもにゃ…";
                 }
-                else if (stress > 40)
-                {
-                    targetText.text = "遊びたいにゃ";
-                }
                 else if (infection > 20)
                 {
                     targetText.text = "感染怖いにゃ";
-                }
-                else if (stress > 20)
-                {
-                    targetText.text = "少し遊びたいにゃ";
                 }
                 else
                 {
@@ -1174,20 +1165,6 @@ public class GameManager : MonoBehaviour
         sliderInfection.value = infection / 100.0f;
     }
 
-    //ストレス更新
-    void SliderStressUpdate()
-    {
-        if (stress > 100)
-        {
-            stress = 100;
-        }
-        if (stress < 0)
-        {
-            stress = 0;
-        }
-        sliderStress.value = stress / 100.0f;
-    }
-
     //日付更新
     void DateUpdate()
     {
@@ -1242,6 +1219,62 @@ public class GameManager : MonoBehaviour
             date += 1;
         }
 
+        PlayerPrefs.SetInt("COIN", coin);
+        PlayerPrefs.SetInt("PAN", pan);
+        PlayerPrefs.SetInt("MASK", mask);
+        PlayerPrefs.SetInt("DATE", date);
+        if (time)
+        {
+            PlayerPrefs.SetInt("TIME", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("TIME", 0);
+        }
+        PlayerPrefs.SetFloat("INFECTION", infection);
+        if (trump)
+        {
+            PlayerPrefs.SetInt("TRUMP", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("TRUMP", 0);
+        }
+        if (shougi)
+        {
+            PlayerPrefs.SetInt("SHOUGI", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("SHOUGI", 0);
+        }
+        if (video)
+        {
+            PlayerPrefs.SetInt("VIDEO", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("VIDEO", 0);
+        }
+        if (game)
+        {
+            PlayerPrefs.SetInt("GAME", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("GAME", 0);
+        }
+        if (sleep)
+        {
+            PlayerPrefs.SetInt("SLEEP", 1);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("SLEEP", 0);
+        }
+        PlayerPrefs.SetInt("STATUS", status);
+        PlayerPrefs.SetFloat("PERCENT", percent);
+
         TotalUpdate();
     }
 
@@ -1273,4 +1306,71 @@ public class GameManager : MonoBehaviour
         targetText.text = count * MASK + "円";
     }
 
+    //感染チェック
+    private bool InfectionCheck()
+    {
+
+        Random.InitState(System.DateTime.Now.Millisecond);
+
+        int d = Random.Range(1, 101);
+        bool check = true;
+
+        if(infection >= d)
+        {
+            Infection();
+            check = false;
+        }
+
+        return check;
+    }
+
+    //感染
+    private void Infection()
+    {
+        textInfection.SetActive(true);
+        pause.SetActive(true);
+        buttonReset.SetActive(true);
+    }
+
+    //リセット
+    private void Reset()
+    {
+        UIUpdate();
+        wallNo = WALL_SLEEP;
+
+        coin = 0; 
+        pan = 5;
+        mask = 5;
+        date = 1;
+        time = true;
+        infection = 0;
+        trump = false;
+        shougi = false;
+        video = false;
+        game = false;
+        sleep = true;
+        status = -1;
+        percent = 1;
+
+        PlayerPrefs.SetInt("COIN", coin);
+        PlayerPrefs.SetInt("PAN", pan);
+        PlayerPrefs.SetInt("MASK", mask);
+        PlayerPrefs.SetInt("DATE", date);
+        PlayerPrefs.SetInt("TIME", 1);
+        PlayerPrefs.SetFloat("INFECTION", infection);
+        PlayerPrefs.SetInt("TRUMP", 0);
+        PlayerPrefs.SetInt("SHOUGI", 0);
+        PlayerPrefs.SetInt("VIDEO", 0);
+        PlayerPrefs.SetInt("GAME", 0);
+        PlayerPrefs.SetInt("SLEEP", 1);
+        PlayerPrefs.SetInt("STATUS", status);
+        PlayerPrefs.SetFloat("PERCENT", percent);
+
+        textInfection.SetActive(false);
+        pause.SetActive(false);
+        buttonReset.SetActive(false);
+
+        TotalUpdate();
+        WallUpdate();
+    }
 }
