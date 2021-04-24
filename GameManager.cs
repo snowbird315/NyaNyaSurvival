@@ -26,33 +26,47 @@ public class GameManager : MonoBehaviour
     private const int VIDEO = 10000; //金額：テレビ
     private const int GAME = 15000; //金額：据置型ゲーム
 
+    private const int HOME = 500; //賃金：内職
+    private const int OPERATO = 1000; //賃金：オペレーター
+    private const int CONVENI = 1500; //賃金：コンビニ
+    private const int RESTAURANT = 2000; //賃金：飲食店
+
 
     //ゲームオブジェクト
     public GameObject panelWalls; //パネル：壁
     public Slider sliderInfection; //スライダー：感染率
-    public GameObject buttonJobs; //ボタン：バイト
-    public GameObject buttonShoppings; //ボタン：買い物
-    public GameObject buttonGames; //ボタン：娯楽
-    public GameObject buttonSleeps; //ボタン：就寝
-    public GameObject buttonOptions; //ボタン：設定
+    public GameObject textInfectionPercent; //テキスト：感染率
+    public GameObject buttonJob; //ボタン：バイト
+    public GameObject buttonGame; //ボタン：娯楽
+    public GameObject buttonSleep; //ボタン：就寝
+    public GameObject buttonJobs; //ボタン：バイト画面
+    public GameObject buttonShoppings; //ボタン：買い物画面
+    public GameObject buttonGames; //ボタン：娯楽画面
+    public GameObject buttonSleeps; //ボタン：就寝画面
+    public GameObject buttonOptions; //ボタン：設定画面
     public GameObject buttonShoppingPans; //ボタン：買い物：食料
     public GameObject buttonShoppingMasks; //ボタン：買い物：マスク
     public GameObject buttonShoppingKadens; //ボタン：買い物：家電
     public GameObject buttonShoppingGames; //ボタン：買い物：娯楽品
     public GameObject buttonShoppingBack; //ボタン：買い物：戻る
+    public GameObject buttonShoppingGoHome; //ボタン：買い物：帰宅
     public GameObject textInfection; //テキスト：感染
     public GameObject pause; //ポーズ用画像UI
-    public GameObject buttonReset;
+    public GameObject buttonReset; //リセットボタン
 
+    public GameObject textHome; //テキスト：内職：感染率
+    public GameObject textOperato; //テキスト：オペレーター：感染率
+    public GameObject textConvini; //テキスト：コンビニ：感染率
+    public GameObject textRestaurant; //テキスト：飲食店：感染率
     public GameObject textCoin; //テキスト：お金
     public GameObject textPan; //テキスト：食料
     public GameObject textMask; //テキスト：マスク
     public GameObject textDate; //テキスト：日付
     public GameObject textTime; //テキスト：時間
     public GameObject textNuko; //テキスト：ぬこ
-    public GameObject imageNuko; //画像：ぬこ
-    public GameObject nukoComment; //ぬこ全部
-    public GameObject nuko;
+    public GameObject imageNuko; //ぬこ：就寝以外：画像
+    public GameObject nukoComment; //ぬこ：就寝以外
+    public GameObject nuko; //ぬこ：就寝
     public GameObject textShoppingPan; //テキスト：買い物：食料：個数
     public GameObject textShoppingMask; //テキスト：買い物：マスク：個数
     public GameObject textShoppingTotalPan; //テキスト：買い物：食料：金額
@@ -65,6 +79,8 @@ public class GameManager : MonoBehaviour
     public GameObject imageShougi; //画像：将棋
     public GameObject imageVideo; //画像：テレビ
     public GameObject imageGame; //画像：ゲーム
+    public GameObject imagePan; //画像：食料警告
+    public GameObject imageMask; //画像：マスク警告
 
 
     //変数
@@ -80,13 +96,21 @@ public class GameManager : MonoBehaviour
     private bool shougi; //将棋
     private bool video; //テレビ
     private bool game; //据置型ゲーム
-    private bool sleep; //睡眠：true,寝れる：false,寝れない
+    private bool sleepFlag; //睡眠：true,寝れる：false,寝れない
     private bool futon; //布団
     private bool fleezer; //冷蔵庫
     private bool desk; //机
     private int status; //状況
-    private float percent; //ストレス係数(?)
+    private float percent; //感染率係数
 
+    private bool buyFlag; //買い物:true,買い物した:false,何もしてない
+
+    private float home; //感染率：内職
+    private float operato; //感染率：オペレーター
+    private float conveni; //感染率：コンビニ
+    private float restaurant; //感染率：飲食店
+
+    //データロードの仮保管変数
     private int DATEs;
     private int TIMEs;
     private int TRUMPs;
@@ -94,6 +118,7 @@ public class GameManager : MonoBehaviour
     private int VIDEOs;
     private int GAMEs;
     private int SLEEPs;
+
 
     Animator animator;
 
@@ -119,8 +144,12 @@ public class GameManager : MonoBehaviour
             SLEEPs = PlayerPrefs.GetInt("SLEEP");
             status = PlayerPrefs.GetInt("STATUS");
             percent = PlayerPrefs.GetFloat("PERCENT");
+            home = PlayerPrefs.GetFloat("HOME");
+            operato = PlayerPrefs.GetFloat("OPERATO");
+            conveni = PlayerPrefs.GetFloat("CONVENI");
+            restaurant = PlayerPrefs.GetFloat("RESTAURANT");
 
-            if(TIMEs == 1)
+            if (TIMEs == 1)
             {
                 time = true;
             }
@@ -136,6 +165,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 trump = false;
+                imageTrump.SetActive(false);
             }
 
             if (SHOUGIs == 1)
@@ -145,6 +175,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 shougi = false;
+                imageShougi.SetActive(false);
             }
 
             if (VIDEOs == 1)
@@ -154,6 +185,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 video = false;
+                imageVideo.SetActive(false);
             }
 
             if (GAMEs == 1)
@@ -163,15 +195,24 @@ public class GameManager : MonoBehaviour
             else
             {
                 game = false;
+                imageGame.SetActive(false);
             }
 
-            if(SLEEPs == 1)
+            if (SLEEPs == 1)
             {
-                sleep = true;
+                sleepFlag = true;
             }
             else
             {
-                sleep = false;
+                sleepFlag = false;
+            }
+            if(pan <= 3)
+            {
+                imagePan.SetActive(true);
+            }
+            if(mask <= 3)
+            {
+                imageMask.SetActive(true);
             }
         }
         else
@@ -186,9 +227,13 @@ public class GameManager : MonoBehaviour
             shougi = false;
             video = false;
             game = false;
-            sleep = true;
+            sleepFlag = true;
             status = -1;
             percent = 1;
+            home = 1;
+            operato = 3;
+            conveni = 5;
+            restaurant = 7;
 
             PlayerPrefs.SetInt("COIN", coin);
             PlayerPrefs.SetInt("PAN",pan);
@@ -203,9 +248,16 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("SLEEP",1);
             PlayerPrefs.SetInt("STATUS",status);
             PlayerPrefs.SetFloat("PERCENT",percent);
+            PlayerPrefs.SetFloat("HOME", home);
+            PlayerPrefs.SetFloat("OPERATO", operato);
+            PlayerPrefs.SetFloat("CONVENI", conveni);
+            PlayerPrefs.SetFloat("RESTAURANT", restaurant);
         }
 
-
+        HomeInfectionUpdate();
+        OperatoInfectionUpdate();
+        ConviniInfectionUpdate();
+        RestaurantInfectionUpdate();
         TotalUpdate();
         WallUpdate();
     }
@@ -257,33 +309,104 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
-    //バイト内容ボタンをプッシュ
-    public void PushButtonJobWage(int wage)
+    //バイト：内職ボタンをプッシュ
+    public void PushButtonJobHome()
     {
         if(mask > 0 && pan > 0)
         {
-            coin += wage;
-        }
-    }
-    public void PushButtonJobInfection(int count)
-    {
-        if(mask > 0 && pan > 0)
-        {
-            if(status == WALL_JOB)
-            {
-                percent *= 1.25f;
-
-            }
-            else
+            coin += HOME;
+            
+            if(status != WALL_JOB)
             {
                 percent = 1;
             }
+
             status = WALL_JOB;
-            infection += count * percent;
             mask -= 1;
             pan -= 1;
+
             if (InfectionCheck())
             {
+                infection += (int)(home * percent);
+                percent *= 1.25f;
+                Tomorrow();
+                PushButtonSleep();
+            }
+        }
+    }
+
+    //バイト：オペレーターボタンをプッシュ
+    public void PushButtonJobOperato()
+    {
+        if (mask > 0 && pan > 0)
+        {
+            coin += OPERATO;
+
+            if (status != WALL_JOB)
+            {
+                percent = 1;
+            }
+
+            status = WALL_JOB;
+            mask -= 1;
+            pan -= 1;
+
+            if (InfectionCheck())
+            {
+                infection += (int)(operato * percent);
+                percent *= 1.25f;
+                Tomorrow();
+                PushButtonSleep();
+            }
+        }
+    }
+
+    //バイト：コンビニボタンをプッシュ
+    public void PushButtonJobConveni()
+    {
+        if (mask > 0 && pan > 0)
+        {
+            coin += CONVENI;
+
+            if (status != WALL_JOB)
+            {
+                percent = 1;
+            }
+
+            status = WALL_JOB;
+            mask -= 1;
+            pan -= 1;
+
+            if (InfectionCheck())
+            {
+                infection += (int)(conveni * percent);
+                percent *= 1.25f;
+                Tomorrow();
+                PushButtonSleep();
+            }
+        }
+    }
+
+    //バイト：飲食店ボタンをプッシュ
+    public void PushButtonJobRestaurant()
+    {
+        if (mask > 0 && pan > 0)
+        {
+            coin += RESTAURANT;
+
+            if (status != WALL_JOB)
+            {
+                percent = 1;
+            }
+
+            status = WALL_JOB;
+            mask -= 1;
+            pan -= 1;
+
+            if (InfectionCheck())
+            {
+                infection += (int)(restaurant * percent);
+                percent *= 1.25f;
                 Tomorrow();
                 PushButtonSleep();
             }
@@ -330,6 +453,21 @@ public class GameManager : MonoBehaviour
         WallUpdate();
     }
 
+    //買い物：帰宅ボタンをプッシュ
+    public void PushButtonShoppingGoHome()
+    {
+        status = WALL_SHOPPING;
+        pan -= 1;
+        mask -= 1;
+        if (InfectionCheck())
+        {
+            infection += 10;
+            OnActiveButton();
+            Tomorrow();
+            PushButtonSleep();
+        }
+    }
+
     //プラスボタンをプッシュ
     public void PushButtonPlus()
     {
@@ -350,26 +488,15 @@ public class GameManager : MonoBehaviour
     {
         if(count * PAN <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             pan += count;
             coin -= count * PAN;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
-            if (InfectionCheck())
+            if(pan > 3)
             {
-                Tomorrow();
-                PushButtonSleep();
+                imagePan.SetActive(false);
             }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -378,26 +505,15 @@ public class GameManager : MonoBehaviour
     {
         if (count * MASK <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             mask += count;
             coin -= count * MASK;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
-            if (InfectionCheck())
+            if(mask > 3)
             {
-                Tomorrow();
-                PushButtonSleep();
+                imageMask.SetActive(false);
             }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -406,27 +522,12 @@ public class GameManager : MonoBehaviour
     {
         if (!futon && FUTON <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             futon = true;
             coin -= FUTON;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
             imageFuton.SetActive(true);
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -435,27 +536,12 @@ public class GameManager : MonoBehaviour
     {
         if (!desk && DESK <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             desk = true;
             coin -= DESK;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
             imageDesk.SetActive(true);
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -464,27 +550,12 @@ public class GameManager : MonoBehaviour
     {
         if(!fleezer && FLEEZER <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             fleezer = true;
             coin -= FLEEZER;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
             imageFleezer.SetActive(true);
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -493,27 +564,12 @@ public class GameManager : MonoBehaviour
     {
         if (!trump && TRUMP <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             trump = true;
             coin -= TRUMP;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
             imageTrump.SetActive(true);
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -522,27 +578,12 @@ public class GameManager : MonoBehaviour
     {
         if (!shougi && SHOUGI <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             shougi = true;
             coin -= SHOUGI;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
             imageShougi.SetActive(true);
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -551,27 +592,12 @@ public class GameManager : MonoBehaviour
     {
         if (!video && VIDEO <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             video = true;
             coin -= VIDEO;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
             imageVideo.SetActive(true);
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -580,27 +606,12 @@ public class GameManager : MonoBehaviour
     {
         if (!game && GAME <= coin && pan > 0 && mask > 0)
         {
-            if (status == WALL_SHOPPING)
-            {
-                percent *= 1.25f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
-            status = WALL_SHOPPING;
+            buyFlag = true;
             game = true;
             coin -= GAME;
-            pan -= 1;
-            mask -= 1;
-            infection += 10 * percent;
             imageGame.SetActive(true);
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            NotActiveButton();
+            TotalUpdate();
         }
     }
 
@@ -609,23 +620,11 @@ public class GameManager : MonoBehaviour
     {
         if (trump && pan > 0)
         {
-            if (status == WALL_GAME)
-            {
-                percent *= 0.75f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
             status = WALL_GAME;
-            infection -= 5 * percent;
+            infection -= 8;
             pan -= 1;
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            Tomorrow();
+            PushButtonSleep();
         }
     }
 
@@ -634,23 +633,11 @@ public class GameManager : MonoBehaviour
     {
         if (shougi && pan > 0)
         {
-            if (status == WALL_GAME)
-            {
-                percent *= 0.75f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
             status = WALL_GAME;
-            infection -= 10 * percent;
+            infection -= 12;
             pan -= 1;
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            Tomorrow();
+            PushButtonSleep();
         }
     }
 
@@ -659,23 +646,11 @@ public class GameManager : MonoBehaviour
     {
         if (video && pan > 0)
         {
-            if (status == WALL_GAME)
-            {
-                percent *= 0.75f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
             status = WALL_GAME;
-            infection -= 12 * percent;
+            infection -= 15;
             pan -= 1;
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            Tomorrow();
+            PushButtonSleep();
         }
     }
 
@@ -684,39 +659,25 @@ public class GameManager : MonoBehaviour
     {
         if (game && video && pan > 0)
         {
-            if (status == WALL_GAME)
-            {
-                percent *= 0.75f;
-
-            }
-            else
-            {
-                percent = 1;
-            }
             status = WALL_GAME;
-            infection -= 15 * percent;
+            infection -= 20;
             pan -= 1;
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
+            Tomorrow();
+            PushButtonSleep();
         }
     }
 
     //就寝：就寝ボタンをプッシュ
     public void PushButtonSleepSleep()
     {
-        if (sleep && pan > 0)
+        if (sleepFlag && pan > 0)
         {
+            status = WALL_SLEEP;
             infection -= 10;
             pan -= 1;
-            if (InfectionCheck())
-            {
-                Tomorrow();
-                PushButtonSleep();
-            }
-            sleep = false;
+            Tomorrow();
+            PushButtonSleep();
+            sleepFlag = false;
         }
     }
 
@@ -749,6 +710,14 @@ public class GameManager : MonoBehaviour
             case WALL_SHOPPING:
                 panelWalls.transform.localPosition = new Vector3(-1000.0f, 0.0f, 0.0f);
                 buttonShoppings.SetActive(true);
+                if (buyFlag)
+                {
+                    buttonShoppingGoHome.SetActive(true);
+                }
+                else
+                {
+                    buttonShoppingGoHome.SetActive(false);
+                }
                 break;
             case WALL_GAME:
                 panelWalls.transform.localPosition = new Vector3(-2000.0f, 0.0f, 0.0f);
@@ -1180,6 +1149,7 @@ public class GameManager : MonoBehaviour
             infection = 0;
         }
         sliderInfection.value = infection / 100.0f;
+        textInfectionPercent.GetComponent<Text>().text = infection + "%";
     }
 
     //日付更新
@@ -1229,11 +1199,36 @@ public class GameManager : MonoBehaviour
     //日時進行
     void Tomorrow()
     {
-        sleep = true;
+        sleepFlag = true;
+        buyFlag = false;
         time = !time;
         if (time)
         {
             date += 1;
+        }
+
+        home *= 1.05f;
+        operato *= 1.04f;
+        conveni *= 1.03f;
+        restaurant *= 1.02f;
+
+        if(status != WALL_JOB)
+        {
+            percent = 1;
+        }
+
+        HomeInfectionUpdate();
+        OperatoInfectionUpdate();
+        ConviniInfectionUpdate();
+        RestaurantInfectionUpdate();
+
+        if (pan <= 3)
+        {
+            imagePan.SetActive(true);
+        }
+        if (mask <= 3)
+        {
+            imageMask.SetActive(true);
         }
 
         PlayerPrefs.SetInt("COIN", coin);
@@ -1281,7 +1276,7 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetInt("GAME", 0);
         }
-        if (sleep)
+        if (sleepFlag)
         {
             PlayerPrefs.SetInt("SLEEP", 1);
         }
@@ -1295,32 +1290,68 @@ public class GameManager : MonoBehaviour
         TotalUpdate();
     }
 
+    //バイト：内職：感染率更新
+    public void HomeInfectionUpdate()
+    {
+        textHome.GetComponent<Text>().text = "+" + (int)(home*percent) + "%";
+    }
+
+    //バイト：オペレーター：感染率更新
+    public void OperatoInfectionUpdate()
+    {
+        textOperato.GetComponent<Text>().text = "+" + (int)(operato*percent) + "%";
+    }
+
+    //バイト：コンビニ：感染率更新
+    public void ConviniInfectionUpdate()
+    {
+        textConvini.GetComponent<Text>().text = "+" + (int)(conveni*percent) + "%";
+    }
+
+    //バイト：飲食店：感染率更新
+    public void RestaurantInfectionUpdate()
+    {
+        textRestaurant.GetComponent<Text>().text = "+" + (int)(restaurant*percent) + "%";
+    }
+
     //買い物：食料：個数更新
     public void PanShoppingUpdate()
     {
-        Text targetText = textShoppingPan.GetComponent<Text>();
-        targetText.text = count + "食";
+        textShoppingPan.GetComponent<Text>().text = count + "食";
     }
 
     //買い物：マスク：個数更新
     public void MaskShoppingUpdate()
     {
-        Text targetText = textShoppingMask.GetComponent<Text>();
-        targetText.text = count + "枚";
+        textShoppingMask.GetComponent<Text>().text = count + "枚";
     }
 
     //買い物：食料：金額更新
     public void PanTotalShoppingUpdate()
     {
-        Text targetText = textShoppingTotalPan.GetComponent<Text>();
-        targetText.text = count * PAN + "円";
+        textShoppingTotalPan.GetComponent<Text>().text = count * PAN + "円";
     }
 
     //買い物：マスク：金額更新
     public void MaskTotalShoppingUpdate()
     {
-        Text targetText = textShoppingTotalMask.GetComponent<Text>();
-        targetText.text = count * MASK + "円";
+        textShoppingTotalMask.GetComponent<Text>().text = count * MASK + "円";
+    }
+
+    //買い物ボタン、設定ボタン以外のボタン表示
+    private void OnActiveButton()
+    {
+        buttonJob.SetActive(true);
+        buttonGame.SetActive(true);
+        buttonSleep.SetActive(true);
+    }
+
+    //買い物ボタン、設定ボタン以外のボタン非表示
+    private void NotActiveButton()
+    {
+        buttonJob.SetActive(false);
+        buttonGame.SetActive(false);
+        buttonSleep.SetActive(false);
     }
 
     //感染チェック
@@ -1365,9 +1396,20 @@ public class GameManager : MonoBehaviour
         shougi = false;
         video = false;
         game = false;
-        sleep = true;
+        sleepFlag = true;
         status = -1;
         percent = 1;
+        home = 1;
+        operato = 3;
+        conveni = 5;
+        restaurant = 8;
+
+        imageTrump.SetActive(false);
+        imageShougi.SetActive(false);
+        imageVideo.SetActive(false);
+        imageGame.SetActive(false);
+        imagePan.SetActive(false);
+        imageMask.SetActive(false);
 
         PlayerPrefs.SetInt("COIN", coin);
         PlayerPrefs.SetInt("PAN", pan);
@@ -1382,12 +1424,22 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("SLEEP", 1);
         PlayerPrefs.SetInt("STATUS", status);
         PlayerPrefs.SetFloat("PERCENT", percent);
+        PlayerPrefs.SetFloat("HOME", home);
+        PlayerPrefs.SetFloat("OPERATO", operato);
+        PlayerPrefs.SetFloat("CONVENI", conveni);
+        PlayerPrefs.SetFloat("RESTAURANT", restaurant);
 
         textInfection.SetActive(false);
         pause.SetActive(false);
         buttonReset.SetActive(false);
 
+        HomeInfectionUpdate();
+        OperatoInfectionUpdate();
+        ConviniInfectionUpdate();
+        RestaurantInfectionUpdate();
+
         TotalUpdate();
         WallUpdate();
     }
+
 }
